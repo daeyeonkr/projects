@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26 15:50",
+ "updated": "2026-11-26 16:27",
  "arms": [
   {
    "exp": "dot_20k",
@@ -31,7 +31,11 @@
    "exp": "hyper2_kv_20k",
    "label": "kv",
    "desc": "기본형에서 칸이 읽어 오는 내용을 value 하나에서, key와 value를 이어 붙여 Linear에 통과시킨 것으로 바꾼다.",
-   "base": false
+   "base": false,
+   "psnr": 20.118,
+   "ssim": 0.6063,
+   "lpips": 0.4073,
+   "scenes": 5466
   },
   {
    "exp": "hyper2_r2_20k",
