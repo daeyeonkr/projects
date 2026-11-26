@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26 17:37",
+ "updated": "2026-11-26 17:39",
  "arms": [
   {
    "exp": "dot_20k",
@@ -185,7 +185,37 @@
    "exp": "hyper2_sa1_20k",
    "label": "Perceiver, 층마다 따로",
    "desc": "기본형에서 읽은 뒤 칸 1536개끼리 self-attention과 작은 MLP를 한 번 거친다. 층마다 자기 칸에서 새로 시작한다.",
-   "base": false
+   "base": false,
+   "psnr": 20.395,
+   "ssim": 0.6177,
+   "lpips": 0.3965,
+   "scenes": 5466,
+   "bins": [
+    {
+     "lo": 0.05,
+     "hi": 0.3,
+     "n": 1358,
+     "psnr": 18.864,
+     "ssim": 0.5947,
+     "lpips": 0.4302
+    },
+    {
+     "lo": 0.3,
+     "hi": 0.55,
+     "n": 2502,
+     "psnr": 20.4,
+     "ssim": 0.6207,
+     "lpips": 0.3937
+    },
+    {
+     "lo": 0.55,
+     "hi": 0.8,
+     "n": 1603,
+     "psnr": 21.691,
+     "ssim": 0.6328,
+     "lpips": 0.3721
+    }
+   ]
   },
   {
    "exp": "hyperchain_20k",
