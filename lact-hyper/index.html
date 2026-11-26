@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>lact-hyper</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main>
+  <div class="crumb"><a href="../">Projects</a> / lact-hyper</div>
+  <h1>lact-hyper</h1>
+  <p class="sub">LaCT의 fast-weight MLP를 gradient 대신 네트워크가 직접 예측한다. 전부 같은 설정으로 20k step 학습 후 평가.</p>
+  <div class="wrap">
+    <table>
+      <thead>
+        <tr><th>실험</th><th>뭘 돌렸나</th><th class="num">PSNR</th><th class="num">SSIM</th><th class="num">LPIPS</th></tr>
+      </thead>
+      <tbody id="rows"><tr><td colspan="5" class="pending">불러오는 중</td></tr></tbody>
+    </table>
+  </div>
+  <p class="note" id="note"></p>
+</main>
+<script>
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+fetch('data.json?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(d => {
+  const done = d.arms.filter(a => a.psnr != null);
+  const best = {
+    psnr: Math.max(...done.map(a => a.psnr)),
+    ssim: Math.max(...done.map(a => a.ssim)),
+    lpips: Math.min(...done.map(a => a.lpips)),
+  };
+  const cell = (a, k, n) => a[k] == null
+    ? '<td class="num pending">진행 중</td>'
+    : `<td class="num${done.length > 1 && a[k] === best[k] ? ' best' : ''}">${a[k].toFixed(n)}</td>`;
+  document.getElementById('rows').innerHTML = d.arms.map(a => `
+    <tr class="${a.base ? 'base' : ''}">
+      <td><div class="label">${esc(a.label)}</div><div class="exp">${esc(a.exp)}</div></td>
+      <td class="desc">${esc(a.desc)}</td>
+      ${cell(a, 'psnr', 3)}${cell(a, 'ssim', 4)}${cell(a, 'lpips', 4)}
+    </tr>`).join('');
+  const scenes = done.length ? done[0].scenes : null;
+  document.getElementById('note').textContent =
+    'RE10K 256×256, 입력 2장과 목표 6장, 12 layer, d 768' +
+    (scenes ? `, 평가 scene ${scenes}개` : '') +
+    (d.updated ? `. 마지막 결과 갱신 ${d.updated}` : '') + '. PSNR과 SSIM은 높을수록, LPIPS는 낮을수록 좋다. 초록색은 그 칸에서 가장 좋은 값.';
+}).catch(() => {
+  document.getElementById('rows').innerHTML = '<tr><td colspan="5" class="pending">data.json을 읽지 못했다</td></tr>';
+});
+</script>
+</body>
+</html>
