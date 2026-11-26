@@ -37,3 +37,6 @@ tr.base td { background: var(--base-bg); }
 .best { color: var(--best); font-weight: 700; }
 .pending { color: var(--muted); font-family: inherit; font-size: 13px; }
 .note { color: var(--muted); font-size: 13px; margin-top: 14px; }
+h2 { font-size: 18px; margin: 40px 0 4px; letter-spacing: -0.01em; }
+h2 + .sub { margin-bottom: 16px; }
+.diff { color: var(--muted); font-weight: 400; font-size: 12px; }

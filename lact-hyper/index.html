@@ -21,6 +21,16 @@
     </table>
   </div>
   <p class="note" id="note"></p>
+
+  <h2>입력 두 장이 겹치는 정도별 PSNR</h2>
+  <p class="sub">평가 scene을 입력 두 장이 서로 겹치는 비율로 세 묶음으로 나눈 평균. 괄호는 LaCT 원본과의 차이.</p>
+  <div class="wrap">
+    <table>
+      <thead id="ohead"><tr><th>실험</th></tr></thead>
+      <tbody id="orows"><tr><td class="pending">불러오는 중</td></tr></tbody>
+    </table>
+  </div>
+  <p class="note">겹침 0.05 이하는 scene이 3개뿐이라 뺐다. 초록색은 그 칸에서 가장 좋은 값.</p>
 </main>
 <script>
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -40,6 +50,26 @@ fetch('data.json?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(
       <td class="desc">${esc(a.desc)}</td>
       ${cell(a, 'psnr', 3)}${cell(a, 'ssim', 4)}${cell(a, 'lpips', 4)}
     </tr>`).join('');
+  const binned = d.arms.filter(a => a.bins && a.bins.length);
+  if (binned.length) {
+    const ref = (d.arms.find(a => a.base && a.bins) || binned[0]).bins;
+    const names = ['조금 겹침', '중간', '많이 겹침'];
+    document.getElementById('ohead').innerHTML = '<tr><th>실험</th>' + ref.map((b, i) =>
+      `<th class="num">${names[i] || ''} ${b.lo}~${b.hi}<br>scene ${b.n}개</th>`).join('') + '</tr>';
+    const obest = ref.map((_, i) => Math.max(...binned.map(a => a.bins[i].psnr)));
+    const base = d.arms.find(a => a.base && a.bins);
+    document.getElementById('orows').innerHTML = d.arms.map(a => `
+      <tr class="${a.base ? 'base' : ''}">
+        <td><div class="label">${esc(a.label)}</div><div class="exp">${esc(a.exp)}</div></td>
+        ${ref.map((_, i) => {
+          if (!a.bins || !a.bins[i]) return '<td class="num pending">진행 중</td>';
+          const v = a.bins[i].psnr;
+          const df = base && !a.base ? v - base.bins[i].psnr : null;
+          const dtxt = df == null ? '' : ` <span class="diff">(${df >= 0 ? '+' : '\u2212'}${Math.abs(df).toFixed(3)})</span>`;
+          return `<td class="num${binned.length > 1 && v === obest[i] ? ' best' : ''}">${v.toFixed(3)}${dtxt}</td>`;
+        }).join('')}
+      </tr>`).join('');
+  }
   const scenes = done.length ? done[0].scenes : null;
   document.getElementById('note').textContent =
     'RE10K 256×256, 입력 2장과 목표 6장, 12 layer, d 768' +
