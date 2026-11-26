@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26 19:52",
+ "updated": "2026-11-26 19:56",
  "arms": [
   {
    "exp": "dot_20k",
@@ -329,7 +329,37 @@
    "exp": "hyper2_sa4_20k",
    "label": "Perceiver, 층마다 따로, 4블록",
    "desc": "층마다 따로인 Perceiver에서 칸끼리 self-attention 블록을 4개로 늘린다.",
-   "base": false
+   "base": false,
+   "psnr": 20.133,
+   "ssim": 0.6057,
+   "lpips": 0.4109,
+   "scenes": 5466,
+   "bins": [
+    {
+     "lo": 0.05,
+     "hi": 0.3,
+     "n": 1358,
+     "psnr": 18.681,
+     "ssim": 0.5863,
+     "lpips": 0.4415
+    },
+    {
+     "lo": 0.3,
+     "hi": 0.55,
+     "n": 2502,
+     "psnr": 20.148,
+     "ssim": 0.6089,
+     "lpips": 0.4081
+    },
+    {
+     "lo": 0.55,
+     "hi": 0.8,
+     "n": 1603,
+     "psnr": 21.346,
+     "ssim": 0.6176,
+     "lpips": 0.3889
+    }
+   ]
   },
   {
    "exp": "hyper_tok_20k",
