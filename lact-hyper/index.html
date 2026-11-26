@@ -42,8 +42,8 @@ fetch('data.json?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(
     const dtxt = df == null ? '' : `<div class="diff">${df >= 0 ? '+' : '\u2212'}${Math.abs(df).toFixed(3)}</div>`;
     return `<td class="num${done.length > 1 && v === best[c] ? ' best' : ''}">${v.toFixed(3)}${dtxt}</td>`;
   };
-  // 항상 PSNR 전체 오름차순 (낮은 것부터). 아직 결과 없는 실험은 맨 아래.
-  const sorted = [...d.arms].sort((x, y) => (x.psnr == null) - (y.psnr == null) || (x.psnr ?? 0) - (y.psnr ?? 0));
+  // 항상 PSNR 전체가 높은 것이 위. 아직 결과 없는 실험은 맨 아래.
+  const sorted = [...d.arms].sort((x, y) => (x.psnr == null) - (y.psnr == null) || (y.psnr ?? 0) - (x.psnr ?? 0));
   document.getElementById('rows').innerHTML = sorted.map(a => `
     <tr class="${a.base ? 'base' : ''}">
       <td><div class="label">${esc(a.label)}</div><div class="exp">${esc(a.exp)}</div></td>
