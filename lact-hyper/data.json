@@ -76,6 +76,18 @@
    "label": "Perceiver, 층마다 따로, 4블록",
    "desc": "층마다 따로인 Perceiver에서 칸끼리 self-attention 블록을 4개로 늘린다.",
    "base": false
+  },
+  {
+   "exp": "hyper_tok_20k",
+   "label": "토큰별 쓰기",
+   "desc": "칸 묶음을 없앤다. 입력 토큰 512개가 각자 k에서 만든 벡터와 v에서 만든 벡터의 곱 한 장씩을 내고, 전부 더한 것이 MLP 행렬 3개의 변화량이 된다. 곱을 만드는 행렬은 따로 학습한다.",
+   "base": false
+  },
+  {
+   "exp": "hyper_tok_ns5_20k",
+   "label": "토큰별 쓰기, 직교화",
+   "desc": "토큰별 쓰기에서 더한 변화량을 LaCT 원본처럼 직교화(NS5)한 뒤 더한다.",
+   "base": false
   }
  ]
 }
