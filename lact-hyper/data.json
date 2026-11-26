@@ -70,6 +70,12 @@
    "label": "Perceiver, 층마다 따로, 2블록",
    "desc": "층마다 따로인 Perceiver에서 칸끼리 self-attention 블록을 1개에서 2개로 늘린다.",
    "base": false
+  },
+  {
+   "exp": "hyper2_sa4_20k",
+   "label": "Perceiver, 층마다 따로, 4블록",
+   "desc": "층마다 따로인 Perceiver에서 칸끼리 self-attention 블록을 4개로 늘린다.",
+   "base": false
   }
  ]
 }
