@@ -14,69 +14,49 @@
   <p class="sub">LaCT의 fast-weight MLP를 gradient 대신 네트워크가 직접 예측한다. 전부 같은 설정으로 20k step 학습 후 평가.</p>
   <div class="wrap">
     <table>
-      <thead>
-        <tr><th>실험</th><th>뭘 돌렸나</th><th class="num">PSNR</th><th class="num">SSIM</th><th class="num">LPIPS</th></tr>
+      <thead id="head">
+        <tr><th>실험</th><th>뭘 돌렸나</th><th class="num">PSNR 전체</th></tr>
       </thead>
-      <tbody id="rows"><tr><td colspan="5" class="pending">불러오는 중</td></tr></tbody>
+      <tbody id="rows"><tr><td colspan="3" class="pending">불러오는 중</td></tr></tbody>
     </table>
   </div>
   <p class="note" id="note"></p>
-
-  <h2>입력 두 장이 겹치는 정도별 PSNR</h2>
-  <p class="sub">평가 scene을 입력 두 장이 서로 겹치는 비율로 세 묶음으로 나눈 평균. 괄호는 LaCT 원본과의 차이.</p>
-  <div class="wrap">
-    <table>
-      <thead id="ohead"><tr><th>실험</th></tr></thead>
-      <tbody id="orows"><tr><td class="pending">불러오는 중</td></tr></tbody>
-    </table>
-  </div>
-  <p class="note">겹침 0.05 이하는 scene이 3개뿐이라 뺐다. 초록색은 그 칸에서 가장 좋은 값.</p>
 </main>
 <script>
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 fetch('data.json?t=' + Math.floor(Date.now() / 60000)).then(r => r.json()).then(d => {
-  const done = d.arms.filter(a => a.psnr != null);
-  const best = {
-    psnr: Math.max(...done.map(a => a.psnr)),
-    ssim: Math.max(...done.map(a => a.ssim)),
-    lpips: Math.min(...done.map(a => a.lpips)),
+  const done = d.arms.filter(a => a.psnr != null && a.bins && a.bins.length);
+  const base = done.find(a => a.base);
+  const ref = (base || done[0] || {bins: []}).bins;
+  const names = ['조금 겹침', '중간', '많이 겹침'];
+  // 열: 전체 PSNR + 입력 두 장이 겹치는 비율 구간별 PSNR
+  const val = (a, i) => a.psnr == null || !a.bins ? null : (i < 0 ? a.psnr : a.bins[i].psnr);
+  const cols = [-1, ...ref.map((_, i) => i)];
+  const best = cols.map(i => Math.max(...done.map(a => val(a, i))));
+  document.getElementById('head').innerHTML = '<tr><th>실험</th><th>뭘 돌렸나</th><th class="num">PSNR 전체</th>' +
+    ref.map((b, i) => `<th class="num">${names[i] || ''}<br>${b.lo}~${b.hi}</th>`).join('') + '</tr>';
+  const cell = (a, i, c) => {
+    const v = val(a, i);
+    if (v == null) return '<td class="num pending">진행 중</td>';
+    const df = base && !a.base ? v - val(base, i) : null;
+    const dtxt = df == null ? '' : `<div class="diff">${df >= 0 ? '+' : '\u2212'}${Math.abs(df).toFixed(3)}</div>`;
+    return `<td class="num${done.length > 1 && v === best[c] ? ' best' : ''}">${v.toFixed(3)}${dtxt}</td>`;
   };
-  const cell = (a, k, n) => a[k] == null
-    ? '<td class="num pending">진행 중</td>'
-    : `<td class="num${done.length > 1 && a[k] === best[k] ? ' best' : ''}">${a[k].toFixed(n)}</td>`;
   document.getElementById('rows').innerHTML = d.arms.map(a => `
     <tr class="${a.base ? 'base' : ''}">
       <td><div class="label">${esc(a.label)}</div><div class="exp">${esc(a.exp)}</div></td>
       <td class="desc">${esc(a.desc)}</td>
-      ${cell(a, 'psnr', 3)}${cell(a, 'ssim', 4)}${cell(a, 'lpips', 4)}
+      ${cols.map((i, c) => cell(a, i, c)).join('')}
     </tr>`).join('');
-  const binned = d.arms.filter(a => a.bins && a.bins.length);
-  if (binned.length) {
-    const ref = (d.arms.find(a => a.base && a.bins) || binned[0]).bins;
-    const names = ['조금 겹침', '중간', '많이 겹침'];
-    document.getElementById('ohead').innerHTML = '<tr><th>실험</th>' + ref.map((b, i) =>
-      `<th class="num">${names[i] || ''} ${b.lo}~${b.hi}<br>scene ${b.n}개</th>`).join('') + '</tr>';
-    const obest = ref.map((_, i) => Math.max(...binned.map(a => a.bins[i].psnr)));
-    const base = d.arms.find(a => a.base && a.bins);
-    document.getElementById('orows').innerHTML = d.arms.map(a => `
-      <tr class="${a.base ? 'base' : ''}">
-        <td><div class="label">${esc(a.label)}</div><div class="exp">${esc(a.exp)}</div></td>
-        ${ref.map((_, i) => {
-          if (!a.bins || !a.bins[i]) return '<td class="num pending">진행 중</td>';
-          const v = a.bins[i].psnr;
-          const df = base && !a.base ? v - base.bins[i].psnr : null;
-          const dtxt = df == null ? '' : ` <span class="diff">(${df >= 0 ? '+' : '\u2212'}${Math.abs(df).toFixed(3)})</span>`;
-          return `<td class="num${binned.length > 1 && v === obest[i] ? ' best' : ''}">${v.toFixed(3)}${dtxt}</td>`;
-        }).join('')}
-      </tr>`).join('');
-  }
   const scenes = done.length ? done[0].scenes : null;
   document.getElementById('note').textContent =
     'RE10K 256×256, 입력 2장과 목표 6장, 12 layer, d 768' +
     (scenes ? `, 평가 scene ${scenes}개` : '') +
-    (d.updated ? `. 마지막 결과 갱신 ${d.updated}` : '') + '. PSNR과 SSIM은 높을수록, LPIPS는 낮을수록 좋다. 초록색은 그 칸에서 가장 좋은 값.';
+    (ref.length ? ` (${ref.map((b, i) => `${names[i]} ${b.n}개`).join(', ')})` : '') +
+    (d.updated ? `. 마지막 결과 갱신 ${d.updated}` : '') +
+    '. 겹침은 입력 두 장이 서로 겹치는 비율이고 0.05 이하는 scene이 3개뿐이라 뺐다. 값 아래 작은 숫자는 LaCT 원본과의 차이. PSNR은 높을수록 좋고 초록색은 그 칸에서 가장 좋은 값.';
 }).catch(() => {
-  document.getElementById('rows').innerHTML = '<tr><td colspan="5" class="pending">data.json을 읽지 못했다</td></tr>';
+  document.getElementById('rows').innerHTML = '<tr><td colspan="3" class="pending">data.json을 읽지 못했다</td></tr>';
 });
 </script>
 </body>
