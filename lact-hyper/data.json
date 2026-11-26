@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26 16:57",
+ "updated": "2026-11-26 17:10",
  "arms": [
   {
    "exp": "dot_20k",
@@ -227,7 +227,37 @@
    "exp": "hyper2_headmlp_20k",
    "label": "head 2층",
    "desc": "기본형에서 칸을 MLP 숫자로 바꾸는 마지막 단계를 Linear 한 번에서 2층(Linear, SiLU, LayerNorm, Linear)으로 바꾼다.",
-   "base": false
+   "base": false,
+   "psnr": 20.211,
+   "ssim": 0.6108,
+   "lpips": 0.4061,
+   "scenes": 5466,
+   "bins": [
+    {
+     "lo": 0.05,
+     "hi": 0.3,
+     "n": 1358,
+     "psnr": 18.702,
+     "ssim": 0.5891,
+     "lpips": 0.4363
+    },
+    {
+     "lo": 0.3,
+     "hi": 0.55,
+     "n": 2502,
+     "psnr": 20.223,
+     "ssim": 0.614,
+     "lpips": 0.4031
+    },
+    {
+     "lo": 0.55,
+     "hi": 0.8,
+     "n": 1603,
+     "psnr": 21.476,
+     "ssim": 0.6244,
+     "lpips": 0.3849
+    }
+   ]
   },
   {
    "exp": "hyper2_sa2_20k",
