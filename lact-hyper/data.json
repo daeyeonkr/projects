@@ -1,11 +1,15 @@
 {
- "updated": "2026-11-26 15:22",
+ "updated": "2026-11-26 15:48",
  "arms": [
   {
    "exp": "dot_20k",
    "label": "LaCT 원본",
    "desc": "입력 토큰으로 gradient를 한 번 계산해 MLP에 기록한다. 비교 기준.",
-   "base": true
+   "base": true,
+   "psnr": 20.843,
+   "ssim": 0.6404,
+   "lpips": 0.3636,
+   "scenes": 5466
   },
   {
    "exp": "hyper_wtok_20k",
@@ -45,6 +49,12 @@
    "exp": "hyperchain_20k",
    "label": "Perceiver, 층을 이어서",
    "desc": "위와 같은 블록을 쓰고, 칸의 내용을 다음 층으로 물려준다. 12개 층이 하나로 이어진다.",
+   "base": false
+  },
+  {
+   "exp": "hyper2_headmlp_20k",
+   "label": "head 2층",
+   "desc": "기본형에서 칸을 MLP 숫자로 바꾸는 마지막 단계를 Linear 한 번에서 2층(Linear, SiLU, LayerNorm, Linear)으로 바꾼다.",
    "base": false
   }
  ]
